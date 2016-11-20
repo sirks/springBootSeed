@@ -1,0 +1,13 @@
+package io.seed.resources;
+
+import io.seed.entities.User;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("users")
+public class UserResource extends CrudResource<User> {
+	public UserResource() {
+		super(User.class);
+	}
+}

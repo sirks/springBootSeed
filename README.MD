@@ -10,3 +10,4 @@ Includes configured
 * Hibernate 5.0.1
 * Groovy
 * Spock
+* Basic Register, Login and CRUD services

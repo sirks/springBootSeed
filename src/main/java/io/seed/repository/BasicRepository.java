@@ -23,12 +23,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Repository
 @Transactional(propagation = Propagation.MANDATORY)
-public class Dao {
+public class BasicRepository {
 
 	private static final int LOCK_TIMEOUT = 1000 * 60;
 	private static final int MAX_LIMIT = 100;
 
-	private static final Logger log = LoggerFactory.getLogger(Dao.class);
+	private static final Logger log = LoggerFactory.getLogger(BasicRepository.class);
 
 	@Autowired
 	protected SessionFactory sessionFactory;

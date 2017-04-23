@@ -2,7 +2,7 @@ package io.seed.services;
 
 import io.seed.entities.Access;
 import io.seed.entities.Auth;
-import io.seed.repository.Dao;
+import io.seed.repository.BasicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,12 +24,12 @@ public class AuthService {
 	private int DEFAULT_SESSION_TIMEOUT;
 	
 	@Autowired
-	protected Dao dao;
+	protected BasicRepository basicRepository;
 
 	@Transactional
 	public Auth register(String username, String password) {
 		Auth auth = new Auth(username, password);
-		dao.persist(auth);
+		basicRepository.persist(auth);
 		return auth;
 	}
 
@@ -38,14 +38,14 @@ public class AuthService {
 		HashMap<String, Object> params = newHashMap();
 		params.put("username", username);
 		params.put("password", password);
-		List<Auth> auths = dao.listByNamedQuery("Auth.login", params);
+		List<Auth> auths = basicRepository.listByNamedQuery("Auth.login", params);
 		if (auths.isEmpty()) {
 			throw apiException(UNAUTHORIZED);
 		}
 		Auth auth = auths.get(0);
 		String token = getRandStringSimple(32);
 		Access access = new Access(auth, token, now().plusMinutes(DEFAULT_SESSION_TIMEOUT));
-		dao.persist(access);
+		basicRepository.persist(access);
 		auth.setToken(token);
 		return auth;
 	}

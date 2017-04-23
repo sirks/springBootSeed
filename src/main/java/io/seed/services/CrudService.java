@@ -2,7 +2,7 @@ package io.seed.services;
 
 import io.seed.entities.Access;
 import io.seed.entities.BaseEntity;
-import io.seed.repository.Dao;
+import io.seed.repository.BasicRepository;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class CrudService {
 
 	@Autowired
-	protected Dao dao;
+	protected BasicRepository basicRepository;
 	@Value("${default.session.timeout.minutes:30}")
 	private int DEFAULT_SESSION_TIMEOUT;
 
@@ -32,7 +32,7 @@ public class CrudService {
 		}
 		Map<String, Object> params = newHashMap();
 		params.put("token", token);
-		List<Access> accesses = dao.listByNamedQuery("Access.token", params);
+		List<Access> accesses = basicRepository.listByNamedQuery("Access.token", params);
 		if (accesses.isEmpty()) {
 			throw apiException(UNAUTHORIZED, "invalid token");
 		}
@@ -42,31 +42,31 @@ public class CrudService {
 	@Transactional(readOnly = true)
 	public <T extends BaseEntity> T findId(Class<T> clazz, String id, String token) {
 		authorize(token);
-		return unproxy(dao.getRequired(clazz, id));
+		return unproxy(basicRepository.getRequired(clazz, id));
 	}
 
 	@Transactional(readOnly = true)
 	public <T extends BaseEntity> List<T> findAll(Class<T> clazz, String token) {
 		authorize(token);
-		return unproxy(dao.list(clazz));
+		return unproxy(basicRepository.list(clazz));
 	}
 
 	@Transactional
 	public <T extends BaseEntity> void delete(Class<T> clazz, String id, String token) {
 		authorize(token);
-		T entity = dao.getRequired(clazz, id);
-		dao.delete(entity);
+		T entity = basicRepository.getRequired(clazz, id);
+		basicRepository.delete(entity);
 	}
 
 	@Transactional
 	public <T extends BaseEntity> T save(Class<T> clazz, T bean, String token) {
 		authorize(token);
 		if (bean.getId() == null) {
-			dao.persist(bean);
+			basicRepository.persist(bean);
 			return bean;
 		}
-		dao.getRequired(clazz, bean.getId());
-		dao.merge(bean);
+		basicRepository.getRequired(clazz, bean.getId());
+		basicRepository.merge(bean);
 		return bean;
 	}
 
